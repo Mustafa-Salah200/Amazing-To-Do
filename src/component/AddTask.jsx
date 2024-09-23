@@ -1,21 +1,57 @@
 /* eslint-disable react/prop-types */
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import { TaskProvider } from "../contextAPI/ContextProvider";
 
 function AddTask({ Check, Data, type }) {
   const { AddTask } = useContext(TaskProvider);
   const { UpdateTask } = useContext(TaskProvider);
-  const addTask = (data) => {
-    Check();
-    AddTask(data);
-  };
-  const updateTask = (data) => {
-    Check();
-    UpdateTask(data);
+  const [formData, setFormData] = useState({
+    title: Data.title || "",
+    description: Data.description || "",
+  });
+  const [error, setError] = useState({
+    title: false,
+    description: false,
+  });
+
+  const handleValue = (data) => {
+    setFormData({ ...formData, [data.target.name]: data.target.value });
+    data.target.value.trim().length > 0 &&
+      setError({ ...error, [data.target.name]: false });
   };
 
-  const title = useRef(Data.title || "");
-  const description = useRef(Data.description || "");
+  const addTask = (data) => {
+    const ob = {};
+    for (const value in formData) {
+      if (formData[value].trim() < 1) {
+        ob[value] = true;
+      }
+    }
+    setError(ob);
+    if (
+      formData.title.trim().length > 1 &&
+      formData.description.trim().length > 1
+    ) {
+      Check();
+      AddTask(data);
+    }
+  };
+  const updateTask = (data) => {
+    const ob = {};
+    for (const value in formData) {
+      if (formData[value].trim() < 1) {
+        ob[value] = true;
+      }
+    }
+    setError(ob);
+    if (
+      formData.title.trim().length > 1 &&
+      formData.description.trim().length > 1
+    ) {
+      Check();
+      UpdateTask(data);
+    }
+  };
 
   return (
     <div className="overlay">
@@ -25,20 +61,24 @@ function AddTask({ Check, Data, type }) {
           <div className="input">
             <label htmlFor="title">Title Name</label>
             <input
-              ref={title}
               id="title"
+              name="title"
               type="text"
+              onChange={(e) => handleValue(e)}
               defaultValue={Data.title || ""}
             />
-          </div>
+            {error.title && <span className="error">* Error: Con't be Empty </span>}
+            </div>
           <div className="input">
-            <label htmlFor="title">Description</label>
+            <label htmlFor="description">Description</label>
             <input
-              ref={description}
-              id="title"
+              id="description"
+              name="description"
               type="text"
+              onChange={(e) => handleValue(e)}
               defaultValue={Data.description || ""}
             />
+            {error.description && <span className="error">* Error: Con't be Empty </span>}
           </div>
           <div className="option">
             <button className="cancel" onClick={Check}>
@@ -52,15 +92,13 @@ function AddTask({ Check, Data, type }) {
                       id: Date.now(),
                       date: new Date().toLocaleDateString(),
                       active: false,
-                      title: title.current.value,
-                      description: description.current.value,
+                      ...formData,
                     })
                   : updateTask({
                       id: Data.id,
                       date: Data.date,
                       active: Data.active,
-                      title: title.current.value,
-                      description: description.current.value,
+                      ...formData,
                     })
               }
             >
