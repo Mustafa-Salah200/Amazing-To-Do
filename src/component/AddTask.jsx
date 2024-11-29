@@ -1,7 +1,30 @@
 /* eslint-disable react/prop-types */
 import { useContext, useRef, useState } from "react";
 import { TaskProvider } from "../contextAPI/ContextProvider";
+import { motion } from "framer-motion";
 
+const colors = [
+  {
+    main: "#FFC107",
+    second: "#ffc10747",
+  },
+  {
+    main: "#009688",
+    second: "#0096882b",
+  },
+  {
+    main: "#F44336",
+    second: "#f4433617",
+  },
+  {
+    main: "#9C27B0",
+    second: "#9c27b01a",
+  },
+  {
+    main: "#2196F3",
+    second: "#2196f31c",
+  },
+];
 function AddTask({ Check, Data, type }) {
   const { AddTask } = useContext(TaskProvider);
   const { UpdateTask } = useContext(TaskProvider);
@@ -53,9 +76,17 @@ function AddTask({ Check, Data, type }) {
     }
   };
 
+  const random = Math.floor(Math.random() * colors.length);
+
   return (
     <div className="overlay">
-      <div className="addTask">
+      <motion.div
+        initial={{ scale: 0.7 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.6 }}
+        transition={{ type: "spring", damping: 15, stiffness: 400 }}
+        className="addTask"
+      >
         {type == "create" ? <h1>ADD NEW TASK</h1> : <h1>UPDATE THE TASK</h1>}
         <div className="form">
           <div className="input">
@@ -67,8 +98,10 @@ function AddTask({ Check, Data, type }) {
               onChange={(e) => handleValue(e)}
               defaultValue={Data.title || ""}
             />
-            {error.title && <span className="error">* Error: Con't be Empty </span>}
-            </div>
+            {error.title && (
+              <span className="error">* Error: Con't be Empty </span>
+            )}
+          </div>
           <div className="input">
             <label htmlFor="description">Description</label>
             <input
@@ -78,7 +111,9 @@ function AddTask({ Check, Data, type }) {
               onChange={(e) => handleValue(e)}
               defaultValue={Data.description || ""}
             />
-            {error.description && <span className="error">* Error: Con't be Empty </span>}
+            {error.description && (
+              <span className="error">* Error: Con't be Empty </span>
+            )}
           </div>
           <div className="option">
             <button className="cancel" onClick={Check}>
@@ -91,13 +126,17 @@ function AddTask({ Check, Data, type }) {
                   ? addTask({
                       id: Date.now(),
                       date: new Date().toLocaleDateString(),
-                      active: false,
+                      favorite: false,
+                      completed: false,
+                      colors: colors[random],
                       ...formData,
                     })
                   : updateTask({
                       id: Data.id,
                       date: Data.date,
-                      active: Data.active,
+                      favorite: Data.favorite,
+                      completed: Data.completed,
+                      colors: Data.colors,
                       ...formData,
                     })
               }
@@ -106,7 +145,7 @@ function AddTask({ Check, Data, type }) {
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

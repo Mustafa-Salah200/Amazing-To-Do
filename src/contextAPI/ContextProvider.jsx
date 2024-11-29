@@ -6,6 +6,10 @@ const GetData = JSON.parse(window.localStorage.getItem("datalist2"));
 
 function ContextProvider(props) {
   const [tasks, setTasks] = useState(GetData || []);
+  const newTasks = tasks.filter(task => task.favorite)
+  const [activeData, setActiveData] = useState(newTasks);
+
+
   const AddTask = (newTask) => {
     setTasks([...tasks, newTask]);
   };
@@ -24,12 +28,14 @@ function ContextProvider(props) {
     });
     setTasks(newTasks);
   };
-  // const UpdateTask = (newTask) => {
-  //   const newTasks = tasks.map((ele) => {
-  //     return ele.id === newTask.id ? { id: newTask.id, ...newTask } : ele;
-  //   });
-  //   window.localStorage.setItem("datalist2", JSON.stringify(newTasks));
-  // };
+  const Active = (type)=>{
+    if(type === "favorite"){
+      const newTasks = tasks.filter(task => task.favorite)
+      setActiveData(newTasks)
+    } else {
+      setActiveData(tasks)
+    }
+  }
 
   useEffect(() => {
     window.localStorage.setItem("datalist2", JSON.stringify(tasks));
@@ -42,6 +48,8 @@ function ContextProvider(props) {
         UpdateTask,
         ClearTask,
         RemoveTask,
+        Active,
+        activeData
       }}
     >
       {props.children}
