@@ -31,7 +31,6 @@ function TaskCard({ Data }) {
   };
   return (
     <>
-      <AnimatePresence>
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -61,9 +60,12 @@ function TaskCard({ Data }) {
               onClick={() => ActiveLove()}
             >
               <svg
-                fill={active ? "#f00" : "#ddd"}
+                fill="currentcolor"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
+                style={{
+                  color: active && "#f00" 
+                }}
               >
                 <path
                   className="love"
@@ -98,7 +100,6 @@ function TaskCard({ Data }) {
             </div>
           </div>
         </motion.div>
-      </AnimatePresence>
       {show && <AddTask Check={Checked} type="update" Data={Data} />}
     </>
   );
